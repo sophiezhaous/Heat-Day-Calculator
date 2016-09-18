@@ -1,0 +1,146 @@
+<html>
+<head>
+  <title>Heat Day Calculator</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDz4pv8MdD8fyYYEm7l51FZJ5CoYsHCP5M",
+    authDomain: "finalproject-2a87e.firebaseapp.com",
+    databaseURL: "https://finalproject-2a87e.firebaseio.com",
+    storageBucket: "finalproject-2a87e.appspot.com",
+  };
+  firebase.initializeApp(config);
+</script>
+<style type= "text/css">
+	body{
+  	font-family: 'Lato', sans-serif;
+    font-size:25px;
+    text-align:center;
+    line-height:30px;
+ background-repeat: repeat-x;
+ background: url(http://vignette2.wikia.nocookie.net/fantendo/images/4/49/Realistic-fire-animated-transparent-gif.gif) repeat-x center bottom;
+	}
+	#title {
+ 	 font-size: 38px;
+  	text-align:center;
+  	color:#FF3049;
+	}
+	.form{
+ 	margin-left:35%;
+  	line-height:25px;
+
+	}
+  #buffer{
+    line-height:20px;
+  }
+  #cityName{
+    font-size:22px;
+  }
+   #stateName{
+    font-size:22px;
+  }
+  #daysMissed{
+    font-size:22px;
+  }
+  #list{
+    font-size:22px;
+  }
+  h1{
+font-size:25px;
+  }
+  h2{
+font-size:25px;
+  }
+	button{
+	/* margin-left:45%;*/
+	border-radius: 4px;
+	background-color: #FF3049;
+	color: white;
+	padding: 5px 5px;
+font-size: 26px;
+	font-family: 'Lato', sans-serif;
+	}
+
+</style>
+<script src = "https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" > </script>
+    <script type="text/javascript">
+    function generateOutput(){
+      //var city= $("#cityName").val();
+      //var state = $("stateName").val();+
+      var requestData = 'http://api.wunderground.com/api/c6dc8e785d943109/conditions/q/'+$('#stateName').val()+'/'+$('#cityName').val()+'.json'; 
+      var resultElement = $('#outputData');
+      var days = $('#daysMissed').val();
+      var choice = document.getElementById("list");
+      var strUser = choice.options[choice.selectedIndex].text;
+      console.log(strUser);
+      var count=0;
+       $.ajax({
+        url:requestData,
+        //data:{
+        //  q:city&APPID
+        //},
+        dataType: "jsonp",
+          method: 'get',
+           success: function (data) {
+            resultElement.html('Weather: ' + data.current_observation.weather+'<br/>'+'Temperature: '+data.current_observation.temp_f);
+            var weather = data.current_observation.weather;
+            var temp = data.current_observation.temp_f;
+            console.log(weather);
+            if(temp>80){
+              count+=temp-80;
+              //console.log(count);
+            }
+            count+=parseInt(days)+parseInt(strUser);
+            document.getElementById("demo").innerHTML = "You have an "+count.toFixed(2) + " percent chance of having a heat day.";
+            console.log(count);
+            firebase.database().ref('users/' + 'userId').set({
+    city: document.getElementById('cityName'),
+    state: document.getElementById('stateName'),
+    temperature: count
+  });
+        }
+  
+      });
+    }
+    </script>
+</head>
+
+<body>
+  
+  <div id="title">
+    Heat Day Calculator
+  </div><br>
+ <h1>City Name: <input id='cityName'></input></h1>
+ <h2>State Name: <input id = 'stateName'></input></h2>
+ Number of School Days Missed: <input id = 'daysMissed'></input><br> <br> <div id='buffer'></div>
+  <div id='outputData'></div>
+  Leniency of school board (1 - none, 10 - very):
+    <select id = "list" required>
+      <option value = "1">1</option>
+      <option value = "2">2</option>
+      <option value = "3">3</option>
+      <option value = "4">4</option>
+	  <option value = "5">5</option>
+	  <option value = "6">6</option>
+	  <option value = "7">7</option>
+	  <option value = "8">8</option>
+	  <option value = "9">9</option>
+	  <option value = "10">10</option>
+      </select><br><br>
+  <button id='button' onclick= 'generateOutput()'>Possibility of a Heat Day?</button>
+  <p id="demo"></p><br>
+  <div style="position:fixed; 
+float:left; 
+ background-repeat: repeat-x;
+ /*
+ width:200px;
+     bottom: 10px;
+     height:100px;*/
+ background-image: url('http://vignette2.wikia.nocookie.net/fantendo/images/4/49/Realistic-fire-animated-transparent-gif.gif');
+ " >
+<!--<img src="http://vignette2.wikia.nocookie.net/fantendo/images/4/49/Realistic-fire-animated-transparent-gif.gif/revision/latest?cb=20150324012556"/>-->
+        </div>
+</body>
+</html>
